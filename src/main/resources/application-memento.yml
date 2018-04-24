@@ -1,0 +1,47 @@
+memento:
+  enabled: true
+  name: memento
+  persistence-unit-name: ${memento.name}
+  package-to-scan:
+  - jp.furplag.sandbox.memento.domain
+  repository-package: jp.furplag.sandbox.memento.domain.repos
+
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    name: ${memento.name}
+    url: jdbc:h2:./.data/${memento.datasource.name};mode=PostgreSQL
+    username: ${memento.name}
+    password: ${memento.name}
+    initialization-mode: never
+    continue-on-error: false
+
+    hikari:
+      allow-pool-suspension: false
+      auto-commit: false
+      connection-init-sql: select 'too young to die .' as TYTD
+      idle-timeout: 30000
+      maximum-pool-size: 10
+      minimum-idle: 10
+
+  doma:
+    data-source-name: memento
+    dialect: h2
+    naming: lenient-snake-lower-case
+    exception-sql-log-type: raw
+
+  flyway:
+    enabled: true
+    ignore-future-migrations: false
+    ignore-missing-migrations: true
+    validate-on-migrate: false
+    locations:
+    - classpath:memento/db/migration
+
+spring:
+  autoconfigure:
+    exclude:
+    - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+  jpa.open-in-view: true
+
+logging.level:
+  org.hibernate.type.descriptor.sql.BasicBinder: trace

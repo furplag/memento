@@ -25,6 +25,13 @@
   <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.0.0.RELEASE</version>
+    <relativePath />
+  </parent>
+
   <name>${project.artifactId}</name>
   <inceptionYear>2018</inceptionYear>
   <description>a sandbox for using multiple database with DOMA .</description>
@@ -128,6 +135,17 @@
   <dependencies>
 
     <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>jp.furplag.sandbox</groupId>
       <artifactId>memento-core</artifactId>
       <version>1.0.0-SNAPSHOT</version>
@@ -136,17 +154,38 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+      <optional>true</optional>
     </dependency>
 
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.16.20</version>
       <optional>true</optional>
     </dependency>
 
+    <dependency>
+      <groupId>org.seasar.doma.boot</groupId>
+      <artifactId>doma-spring-boot-starter</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seasar.doma</groupId>
+      <artifactId>doma</artifactId>
+      <version>2.19.2</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -154,7 +193,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.0.2</version>
         <configuration>
           <archive>
             <manifestEntries>
@@ -168,7 +206,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.4</version>
         <executions>
           <execution>
             <id>attach-javadocs</id>
@@ -182,7 +219,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.0.1</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -196,7 +232,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.20</version>
         <configuration>
           <argLine>${jacocoArgs} -Dfile.encoding=UTF-8</argLine>
         </configuration>
@@ -290,7 +325,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
-        <version>2.8.2</version>
         <configuration>
           <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
         </configuration>
