@@ -62,13 +62,13 @@ public interface DefaultDomaConfigurer extends DomaConfigurer {
     @Autowired
     @Qualifier("domaProperties")
     @Getter
-    DomaProperties domaProperties;
+    private DomaProperties domaProperties;
 
     /** {@link DataSource} for default (primary) database . */
     @Autowired
     @Qualifier("dataSource")
     @Getter
-    DataSource dataSource;
+    private DataSource dataSource;
 
     @PostConstruct
     private void initialized() {

@@ -65,14 +65,14 @@ public interface DefaultFlywayConfigurer extends FlywayConfigurer {
     /** {@link Flyway} for default (primary) database . */
     @Autowired
     @Qualifier("flyway")
-    Flyway flyway;
+    private Flyway flyway;
 
     /**
      * starts the database migration .
      * @see Flyway#migrate()
      */
     @PostConstruct
-    void migrate() {
+    private void migrate() {
       if (flyway != null) flyway.migrate();
     }
   }

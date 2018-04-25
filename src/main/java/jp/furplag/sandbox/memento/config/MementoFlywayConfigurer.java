@@ -72,7 +72,7 @@ public interface MementoFlywayConfigurer extends FlywayConfigurer {
      * @see Flyway#migrate()
      */
     @PostConstruct
-    void migrate() {
+    private void migrate() {
       if (flyway != null) flyway.migrate();
     }
   }
