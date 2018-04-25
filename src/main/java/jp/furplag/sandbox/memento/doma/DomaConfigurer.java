@@ -39,7 +39,7 @@ public interface DomaConfigurer extends Config {
    * @return {@link UnknownColumnHandler} which silently through off any of unknown columns .
    */
   public static UnknownColumnHandler lazilyUnknownColumnHandler() {
-    return new UnknownColumnHandler() {@Override public void handle(Query query, EntityType<?> entityType, String unknownColumnName) {} };
+    return new UnknownColumnHandler() {@Override public void handle(Query query, EntityType<?> entityType, String unknownColumnName) {/* do nothing . */} };
   }
 
   /**
