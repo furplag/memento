@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package jp.furplag.sandbox.memento.config;
 
 import java.util.List;
@@ -22,7 +23,6 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.callback.FlywayCallback;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -40,13 +40,15 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ResourceLoader;
 
+import jp.furplag.sandbox.memento.flyway.FlywayConfigurer;
+
 /**
  * {@link Flyway} database migration for default (primary) database .
  *
  * @author furplag
  *
  */
-public interface DefaultFlywayConfigurer {
+public interface DefaultFlywayConfigurer extends FlywayConfigurer {
 
   /**
    * {@link Flyway} database migration for default (primary) database .
@@ -75,27 +77,10 @@ public interface DefaultFlywayConfigurer {
     }
   }
 
-  @Bean("flywayProperties")
-  @Primary
-  @ConfigurationProperties("spring.flyway")
-  @ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", matchIfMissing = false)
-  default FlywayProperties flywayProperties() {
-    return new FlywayProperties();
-  }
-
   /**
-   * {@link Flyway} for default (primary) database .
-   *
-   * @param properties {@link FlywayProperties}
-   * @param dataSourceProperties {@link DataSourceProperties}
-   * @param resourceLoader {@link ResourceLoader}
-   * @param dataSource {@link DataSource}
-   * @param migrationStrategy {@link FlywayMigrationStrategy}
-   * @param flywayCallbacks {@link FlywayCallback}
-   * @return {@link Flyway} for default (primary) database .
-   *
-   * @see DefaultDataSourceConfigurer
+   * {@inheritDoc}
    */
+  @Override
   @Bean("flyway")
   @Primary
   @ConfigurationProperties("spring.flyway")
@@ -108,16 +93,16 @@ public interface DefaultFlywayConfigurer {
     @FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
     ObjectProvider<FlywayMigrationStrategy> migrationStrategy,
     ObjectProvider<List<FlywayCallback>> flywayCallbacks) {
-
-    // returns only a dataSource with named "mementoDataSource" in any situation .
-    ObjectProvider<DataSource> wrappedDataSource = new ObjectProvider<DataSource>() {
-      @Override public DataSource getObject() throws BeansException { return dataSource; }
-      @Override public DataSource getObject(Object... args) throws BeansException { return dataSource; }
-      @Override public DataSource getIfAvailable() throws BeansException { return dataSource; }
-      @Override public DataSource getIfUnique() throws BeansException { return dataSource; }
-    };
-
-    return new FlywayAutoConfiguration.FlywayConfiguration(properties, dataSourceProperties, resourceLoader, wrappedDataSource, flywayDataSource, migrationStrategy, flywayCallbacks).flyway();
     // @formatter:on
+    return new FlywayAutoConfiguration.FlywayConfiguration(properties, dataSourceProperties, resourceLoader, FlywayConfigurer.inflexibleDataSourceProvider(dataSource), flywayDataSource, migrationStrategy, flywayCallbacks).flyway();
+  }
+
+  @Override
+  @Bean("flywayProperties")
+  @Primary
+  @ConfigurationProperties("spring.flyway")
+  @ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", matchIfMissing = false)
+  default FlywayProperties flywayProperties() {
+    return new FlywayProperties();
   }
 }

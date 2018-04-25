@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package jp.furplag.sandbox.memento.config;
 
 import java.util.List;
@@ -22,13 +23,13 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.callback.FlywayCallback;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.flyway.FlywayDataSource;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.boot.autoconfigure.flyway.FlywayProperties;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -38,13 +39,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ResourceLoader;
 
+import jp.furplag.sandbox.memento.flyway.FlywayConfigurer;
+
 /**
  * {@link Flyway} database migration for internal database named as "memento" .
  *
  * @author furplag
  *
  */
-public interface MementoFlywayConfigurer {
+public interface MementoFlywayConfigurer extends FlywayConfigurer {
 
   /**
    * {@link Flyway} database migration for internal database named as "memento" .
@@ -62,7 +65,7 @@ public interface MementoFlywayConfigurer {
     /** {@link Flyway} for internal database named as "memento" . */
     @Autowired
     @Qualifier("mementoFlyway")
-    Flyway flyway;
+    private Flyway flyway;
 
     /**
      * starts the database migration .
@@ -75,49 +78,32 @@ public interface MementoFlywayConfigurer {
   }
 
   /**
-   * {@link FlywayProperties} for {@link #flyway} .
-   *
-   * @return {@link FlywayProperties} for {@link #flyway}
-   */
-  @Bean("mementoFlywayProperties")
-  @ConfigurationProperties("memento.flyway")
-  default FlywayProperties flywayProperties() {
-    return new FlywayProperties();
-  }
-
-  /**
-   * {@link Flyway} for internal database named as "memento" .
-   *
-   * @param properties {@link FlywayProperties}
-   * @param dataSourceProperties {@link DataSourceProperties}
-   * @param resourceLoader {@link ResourceLoader}
-   * @param dataSource {@link DataSource}
-   * @param migrationStrategy {@link FlywayMigrationStrategy}
-   * @param flywayCallbacks {@link FlywayCallback}
-   * @return {@link Flyway} for internal database named as "memento"
-   *
-   * @see MementoDataSourceConfigurer
+   * {@inheritDoc}
    */
   @Bean("mementoFlyway")
   @ConfigurationProperties("memento.flyway")
   default Flyway flyway(
-  // @formatter:off
+    // @formatter:off
     @Qualifier("mementoFlywayProperties") FlywayProperties properties,
     @Qualifier("mementoDataSourceProperties") DataSourceProperties dataSourceProperties,
     ResourceLoader resourceLoader,
     @Qualifier("mementoDataSource") DataSource dataSource,
+    @FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
     ObjectProvider<FlywayMigrationStrategy> migrationStrategy,
     ObjectProvider<List<FlywayCallback>> flywayCallbacks) {
-
-    // returns only a dataSource with named "mementoDataSource" in any situation .
-    ObjectProvider<DataSource> mementoDataSource = new ObjectProvider<DataSource>() {
-      @Override public DataSource getObject() throws BeansException { return dataSource; }
-      @Override public DataSource getObject(Object... args) throws BeansException { return dataSource; }
-      @Override public DataSource getIfAvailable() throws BeansException { return dataSource; }
-      @Override public DataSource getIfUnique() throws BeansException { return dataSource; }
-    };
-
-    return new FlywayAutoConfiguration.FlywayConfiguration(properties, dataSourceProperties, resourceLoader, mementoDataSource, mementoDataSource, migrationStrategy, flywayCallbacks).flyway();
     // @formatter:on
+    return new FlywayAutoConfiguration.FlywayConfiguration(properties, dataSourceProperties, resourceLoader, FlywayConfigurer.inflexibleDataSourceProvider(dataSource), flywayDataSource, migrationStrategy, flywayCallbacks).flyway();
+  }
+
+  /**
+   * {@link FlywayProperties} for {@link #flyway} .
+   *
+   * @return {@link FlywayProperties} for {@link #flyway}
+   */
+  @Override
+  @Bean("mementoFlywayProperties")
+  @ConfigurationProperties("memento.flyway")
+  default FlywayProperties flywayProperties() {
+    return new FlywayProperties();
   }
 }

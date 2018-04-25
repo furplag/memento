@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package jp.furplag.sandbox.memento.doma;
 
 import org.seasar.doma.boot.autoconfigure.DomaProperties;
@@ -24,6 +25,12 @@ import org.seasar.doma.jdbc.entity.EntityType;
 import org.seasar.doma.jdbc.query.Query;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * DOMA configuration .
+ *
+ * @author furplag
+ *
+ */
 public interface DomaConfigurer extends Config {
 
   /**
@@ -55,7 +62,11 @@ public interface DomaConfigurer extends Config {
     return getDomaProperties().getDialect().create();
   }
 
-  /** {@link #domaProperties()} . */
+  /**
+   * {@link #domaProperties()} .
+   *
+   * @return {@link DomaProperties}
+   */
   DomaProperties getDomaProperties();
 
   /**
