@@ -1,23 +1,26 @@
-insert into memento (
-  prefix
-, name
-, value
-/*%if entity.sortOrder != null *//*# ", sort_order" *//*%end */
-/*%if entity.version != null *//*# ", version" *//*%end */
-/*%if entity.created != null *//*# ", created" *//*%end */
-/*%if entity.modified != null *//*# ", modified" *//*%end */
-) values (
-  /* entity.prefix */''
-, /* entity.name */''
-, /* entity.value */''
-/*%if entity.version != null *//*# ", " *//* entity.version.version */1/*%end */
-/*%if entity.sortOrder != null *//*# ", " *//* entity.sortOrder */0/*%end */
-/*%if entity.created != null *//*# ", " *//* entity.created.created */null/*%end */
-/*%if entity.modified != null *//*# ", " *//* entity.modified.modified */null/*%end */
-) on conflict(prefix, name) do update set
-  value = /* entity.value */''
-, version = (select version + 1 from memento where prefix = /* entity.prefix */'' and name = /* entity.name */'')
-/*%if entity.sortOrder != null *//*# ", " *//* entity.sortOrder */0/*%end */
-/*%if entity.created != null *//*# ", " *//* entity.created.created */null/*%end */
-/*%if entity.modified != null *//*# ", " *//* entity.modified.modified */null/*%end */
-;
+merge into memento dest
+using (
+  select
+  /*^ e.prefix */'' as prefix
+, /*^ e.name */'' as name
+, /*^ e.value */'' as value
+, /*^ e.sortOrder */0 as sort_order
+, /*^ e.created.created */0 as created
+, /*^ e.modified.modified */0 as modified
+, /*^ e.version.version */0 as version
+) source on (dest.prefix = source.prefix and dest.name = source.name)
+when matched then update set
+  value = source.value
+, sort_order = source.sort_order
+, modified = source.modified
+, version = (dest.version + 1)
+where version = dest.version
+when not matched then insert values (
+  source.prefix
+, source.name
+, source.value
+, source.sort_order
+, source.created
+, source.modified
+, source.version
+)

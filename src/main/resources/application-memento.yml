@@ -2,6 +2,7 @@ memento:
   enabled: true
   name: memento
   persistence-unit-name: ${memento.name}
+  base-package: jp.furplag.sandbox.memento
   package-to-scan:
   - jp.furplag.sandbox.memento.domain
   repository-package: jp.furplag.sandbox.memento.domain.repos
@@ -27,7 +28,9 @@ memento:
     data-source-name: memento
     dialect: h2
     naming: lenient-snake-lower-case
-    exception-sql-log-type: raw
+    exception-sql-log-type: formatted
+    exception-translation-enabled: false
+    sql-file-repository: no-cache
 
   flyway:
     enabled: true

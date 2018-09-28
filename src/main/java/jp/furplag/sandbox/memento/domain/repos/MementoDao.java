@@ -16,33 +16,43 @@
 
 package jp.furplag.sandbox.memento.domain.repos;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.seasar.doma.Dao;
 import org.seasar.doma.Insert;
 import org.seasar.doma.Select;
 import org.seasar.doma.Update;
 import org.seasar.doma.jdbc.Result;
+import org.springframework.transaction.annotation.Transactional;
 
 import jp.furplag.memento.domain.entity.Memento;
 import jp.furplag.sandbox.memento.doma.Memently;
 
 @Memently
 @Dao
+@Transactional
 public interface MementoDao {
 
   @Select
   List<Memento> findAll();
 
   @Select
-  Memento oneOf(Memento entity);
+  Memento oneOf(Memento e);
 
   @Insert(excludeNull = true)
-  Result<Memento> insert(Memento entity);
+  Result<Memento> insert(Memento e);
 
-  @Update(excludeNull = true)
-  Result<Memento> update(Memento entity);
+  @Update(ignoreVersion = false)
+  Result<Memento> update(Memento e);
 
   @Update(sqlFile = true)
-  Result<Memento> save(Memento entity);
+  Result<Memento> save(Memento e);
+
+  default Memento getIfPersistencive(Memento e) {
+    return Optional.ofNullable(oneOf(e)).orElse(e);
+  }
 }

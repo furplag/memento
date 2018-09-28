@@ -2,8 +2,8 @@
   {
     "name": "memento.enabled",
     "type": "java.lang.Boolean",
-    "description": "Whether to enable internal JPA .",
-    "defaultValue": true
+    "description": "Whether to enable internal DOMA .",
+    "defaultValue": false
   },
   {
     "name": "memento.name",
@@ -12,26 +12,13 @@
     "defaultValue": "memento"
   },
   {
-    "name": "memento.package-to-scan",
-    "type": "java.util.List<java.lang.String>",
-    "description": "the names of packages to scan for entities .",
-    "defaultValue": "jp.furplag.sandbox.memento.domain"
-  },
-  {
-    "name": "memento.persistence-unit-name",
-    "type": "java.lang.String",
-    "description": "the name of the persistence unit .",
-    "defaultValue": "confidential"
-  },
-  {
-    "name": "memento.repository-package",
-    "type": "java.lang.String",
-    "description": "the names of packages to scan for repositories .",
-    "defaultValue": "jp.furplag.sandbox.memento.domain.repos"
-  },
-  {
     "name": "memento.datasource.hikari",
     "type": "java.util.Map<String, Object>",
     "description": "Hikari specific settings ."
+  },
+  {
+    "name": "memento.base-package",
+    "type": "java.lang.String",
+    "description": "A description for 'memento.base-package'"
   }
 ]}
